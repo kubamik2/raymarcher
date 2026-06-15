@@ -6,11 +6,13 @@
 namespace objects {
 class GameObject {
 public:
-    ~GameObject() {}
-    components::Transform m_transform;
+    virtual ~GameObject();
+
+    void add_child(GameObject* child);
     components::Transform global_transform();
-private:
+
+    components::Transform m_transform;
     std::optional<GameObject*> m_parent;
-    std::vector<GameObject> m_children;
+    std::vector<GameObject*> m_children;
 };
 }

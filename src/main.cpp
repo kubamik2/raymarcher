@@ -1,3 +1,4 @@
+#include "objects/player.hpp"
 #include <cstdio>
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/matrix_operation.hpp"
@@ -16,7 +17,7 @@
 #define WINDOW_HEIGHT 1200
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow* window, objects::Camera &camera, float dt);
+void processInput(GLFWwindow* window, objects::Player &player, float dt);
 void run(GLFWwindow* window);
 
 GLfloat VERTICES[] = {
@@ -80,19 +81,19 @@ void run(GLFWwindow* window) {
         .add_module("src/shaders/compute.glsl", GL_COMPUTE_SHADER)
         .build();
 
-    objects::Camera camera;
+    objects::Player player;
 
     float dt;
     float last_frame = (float)glfwGetTime();
     // render loop
     while (!glfwWindowShouldClose(window)) {
         // input
-        processInput(window, camera, dt);
+        processInput(window, player, dt);
 
         // rendering
         {
             compute_shader.use();
-            camera.bind(compute_shader.get_id());
+            player.m_camera->bind(compute_shader.get_id());
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, screen.get_screen_texture());
             glUniform1i(glGetUniformLocation(compute_shader.get_id(), "screen"), 0);
@@ -119,37 +120,35 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 }
 
 
-void processInput(GLFWwindow* window, objects::Camera &camera, float dt) {
-    glm::vec3 pos = camera.m_transform.translation();
-    printf("(%.1f, %.1f, %.1f)\n", pos.x, pos.y, pos.z);
+void processInput(GLFWwindow* window, objects::Player &player, float dt) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
     }
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        camera.m_transform.translate(camera.get_direction() * dt);
+        player.m_transform.translate(player.m_camera->get_direction() * dt);
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        camera.m_transform.translate(-camera.get_direction() * dt);
+        player.m_transform.translate(-player.m_camera->get_direction() * dt);
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        glm::vec3 side = glm::cross(camera.get_direction(), glm::vec3(0.0, 1.0, 0.0));
-        camera.m_transform.translate(-side * dt);
+        glm::vec3 side = glm::cross(player.m_camera->get_direction(), glm::vec3(0.0, 1.0, 0.0));
+        player.m_transform.translate(-side * dt);
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        glm::vec3 side = glm::cross(camera.get_direction(), glm::vec3(0.0, 1.0, 0.0));
-        camera.m_transform.translate(side * dt);
+        glm::vec3 side = glm::cross(player.m_camera->get_direction(), glm::vec3(0.0, 1.0, 0.0));
+        player.m_transform.translate(side * dt);
     }
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-        camera.m_transform.translate(glm::vec3(0.0, 1.0, 0.0) * dt);
+        player.m_transform.translate(glm::vec3(0.0, 1.0, 0.0) * dt);
     }
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-        camera.m_transform.translate(-glm::vec3(0.0, 1.0, 0.0) * dt);
+        player.m_transform.translate(-glm::vec3(0.0, 1.0, 0.0) * dt);
     }
 
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-        camera.m_transform.rotate(glm::radians(-1.0), glm::vec3(0.0, 1.0, 0.0));
+        player.m_transform.rotate(glm::radians(-1.0), glm::vec3(0.0, 1.0, 0.0));
     }
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-        camera.m_transform.rotate(glm::radians(1.0), glm::vec3(0.0, 1.0, 0.0));
+        player.m_transform.rotate(glm::radians(1.0), glm::vec3(0.0, 1.0, 0.0));
     }
 }
