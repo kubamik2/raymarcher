@@ -7,7 +7,6 @@
 namespace objects {
 class Camera : public GameObject, public Bindable {
 public:
-    Camera() {}; 
     void bind(GLuint program) override;
     glm::vec3 get_direction();
 };
