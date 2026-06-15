@@ -10,17 +10,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(OpenGL REQUIRED)
 
-add_executable("${CMAKE_PROJECT_NAME}"
-    src/main.cpp src/glad.c
-    src/screen.cpp src/screen.hpp
-    src/stb_image.cpp src/stb_image.h
-    src/util.cpp src/util.hpp
-    src/shader/shader.cpp src/shader/shader.hpp
-    src/shader/shader_builder.cpp src/shader/shader_builder.hpp
-    src/bindable.hpp
-    src/camera/camera.cpp src/camera/camera.hpp
-    src/camera/center_camera.cpp src/camera/center_camera.hpp
-)
+file(GLOB_RECURSE SRCS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
+add_executable("${CMAKE_PROJECT_NAME}" "${SRCS}")
 
 target_include_directories("${CMAKE_PROJECT_NAME}" PRIVATE include)
 
