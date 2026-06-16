@@ -18,8 +18,3 @@ components::Transform objects::GameObject::global_transform() {
         return m_transform;
     }
 }
-
-objects::GameObject* objects::GameObject::parent() {
-    assert(m_parent && "Game object has no parent");
-    return *m_parent;
-}

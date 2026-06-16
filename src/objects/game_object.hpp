@@ -8,7 +8,9 @@ class GameObject {
 public:
     virtual ~GameObject();
 
-    GameObject* parent();
+    GameObject* parent() {
+        return m_parent.value();
+    }
 
     bool has_parent() {
         return m_parent.has_value();
