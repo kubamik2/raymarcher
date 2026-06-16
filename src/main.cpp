@@ -1,9 +1,10 @@
+#include "glm/trigonometric.hpp"
+#include "objects/game_object.hpp"
 #include "objects/player.hpp"
 #include <cstdio>
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/matrix_operation.hpp"
 
-#include "objects/camera.hpp"
 #include "screen.hpp"
 #include "shader/shader_builder.hpp"
 #include "shader/shader.hpp"
@@ -11,6 +12,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "components/components.hpp"
+#include "objects/objects.hpp"
 
 
 #define WINDOW_WIDTH 1920
@@ -125,17 +127,17 @@ void processInput(GLFWwindow* window, objects::Player &player, float dt) {
         glfwSetWindowShouldClose(window, true);
     }
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        player.m_transform.translate(player.m_camera->get_direction() * dt);
+        player.m_transform.translate(player.m_camera->direction() * dt);
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        player.m_transform.translate(-player.m_camera->get_direction() * dt);
+        player.m_transform.translate(-player.m_camera->direction() * dt);
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        glm::vec3 side = glm::cross(player.m_camera->get_direction(), glm::vec3(0.0, 1.0, 0.0));
+        glm::vec3 side = glm::cross(player.m_camera->direction(), glm::vec3(0.0, 1.0, 0.0));
         player.m_transform.translate(-side * dt);
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        glm::vec3 side = glm::cross(player.m_camera->get_direction(), glm::vec3(0.0, 1.0, 0.0));
+        glm::vec3 side = glm::cross(player.m_camera->direction(), glm::vec3(0.0, 1.0, 0.0));
         player.m_transform.translate(side * dt);
     }
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
@@ -146,9 +148,16 @@ void processInput(GLFWwindow* window, objects::Player &player, float dt) {
     }
 
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-        player.m_transform.rotate(glm::radians(-1.0), glm::vec3(0.0, 1.0, 0.0));
+        player.m_camera->rotate_horizontal(glm::radians(1.0));
     }
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-        player.m_transform.rotate(glm::radians(1.0), glm::vec3(0.0, 1.0, 0.0));
+        player.m_camera->rotate_horizontal(glm::radians(-1.0));
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+        player.m_camera->rotate_vertical(glm::radians(-1.0));
+    }
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+        player.m_camera->rotate_vertical(glm::radians(1.0));
     }
 }

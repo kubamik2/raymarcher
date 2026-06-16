@@ -1,4 +1,5 @@
 #pragma once
-#include "camera.hpp"
+#include "camera/camera.hpp"
+#include "camera/center_camera.hpp"
 #include "game_object.hpp"
 #include "player.hpp"

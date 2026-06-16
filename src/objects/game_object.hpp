@@ -1,5 +1,6 @@
 #pragma once
 #include "../components/components.hpp"
+#include <cassert>
 #include <vector>
 #include <optional>
 
@@ -7,6 +8,10 @@ namespace objects {
 class GameObject {
 public:
     virtual ~GameObject();
+    GameObject* parent() {
+        assert(m_parent && "Game object has no parent");
+        return *m_parent;
+    }
 
     void add_child(GameObject* child);
     components::Transform global_transform();
