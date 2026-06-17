@@ -20,6 +20,12 @@ void objects::camera::CenterCamera::rotate_horizontal(float angle) {
 
 void objects::camera::CenterCamera::rotate_vertical(float angle) {
     m_transform.rotate(angle, glm::vec3(1.0, 0.0, 0.0));
+    float pitch = glm::pitch(m_transform.rotation());
+    if (pitch > 1.5) {
+        m_transform.rotate(1.5 - pitch, glm::vec3(1.0, 0.0, 0.0));
+    } else if (pitch < -1.5) {
+        m_transform.rotate(-1.5 - pitch, glm::vec3(1.0, 0.0, 0.0));
+    }
 }
 
 glm::vec3 objects::camera::CenterCamera::direction() {
