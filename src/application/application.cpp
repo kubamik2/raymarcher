@@ -1,4 +1,6 @@
 #include "application.hpp"
+#include <GLFW/glfw3.h>
+#include <cstdio>
 #include <stdexcept>
 #include "../shader/shader.hpp"
 #include "../shader/shader_builder.hpp"
@@ -33,6 +35,13 @@ application::Application::Application() {
     glfwMakeContextCurrent(m_window);
     glfwSwapInterval(true);
 
+    // glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+    // glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    // if (glfwRawMouseMotionSupported()) {
+    //     glfwSetInputMode(m_window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+    // }
+
     // initialize GLAD
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         glfwTerminate();
@@ -41,8 +50,11 @@ application::Application::Application() {
 
     glViewport(0, 0, m_width, m_height);
 
-    // window resize callback
+    // callbacks
     glfwSetFramebufferSizeCallback(m_window, this->framebuffer_size_callback);
+    glfwSetScrollCallback(m_window, Application::scroll_callback);
+    glfwSetCursorPosCallback(m_window, Application::cursor_position_callback);
+
 }
 
 application::Application::~Application() {
@@ -62,7 +74,7 @@ void application::Application::run() {
     // render loop
     while (!glfwWindowShouldClose(m_window)) {
         // input
-        process_input(m_window, player, dt);
+        process_input(player, dt);
 
         // execute raymarching compute shader
         {
@@ -84,6 +96,8 @@ void application::Application::run() {
             screen.render();
         }
 
+        m_input.reset_mouse_delta();
+        m_input.reset_mouse_scroll();
         // swap and poll
         glfwSwapBuffers(m_window);
         glfwPollEvents();
@@ -92,49 +106,53 @@ void application::Application::run() {
     }
 }
 
-void application::Application::process_input(GLFWwindow* window, objects::Player &player, float dt) {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, true);
+void application::Application::process_input(objects::Player &player, float dt) {
+    if (m_input.get_key(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        glfwSetWindowShouldClose(m_window, true);
     }
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+    if (m_input.get_key(m_window, GLFW_KEY_W) == GLFW_PRESS) {
         player.m_transform.translate(player.m_camera->direction() * dt);
     }
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+    if (m_input.get_key(m_window, GLFW_KEY_S) == GLFW_PRESS) {
         player.m_transform.translate(-player.m_camera->direction() * dt);
     }
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+    if (m_input.get_key(m_window, GLFW_KEY_A) == GLFW_PRESS) {
         glm::vec3 side = glm::cross(player.m_camera->direction(), glm::vec3(0.0, 1.0, 0.0));
         player.m_transform.translate(-side * dt);
     }
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+    if (m_input.get_key(m_window, GLFW_KEY_D) == GLFW_PRESS) {
         glm::vec3 side = glm::cross(player.m_camera->direction(), glm::vec3(0.0, 1.0, 0.0));
         player.m_transform.translate(side * dt);
     }
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+    if (m_input.get_key(m_window, GLFW_KEY_SPACE) == GLFW_PRESS) {
         player.m_transform.translate(glm::vec3(0.0, 1.0, 0.0) * dt);
     }
-    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+    if (m_input.get_key(m_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
         player.m_transform.translate(-glm::vec3(0.0, 1.0, 0.0) * dt);
     }
 
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-        player.m_camera->rotate_horizontal(glm::radians(1.0));
-    }
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-        player.m_camera->rotate_horizontal(glm::radians(-1.0));
+    if (m_input.get_mouse_button(m_window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+        player.m_camera->rotate_horizontal(glm::radians(m_input.mouse_dx()));
+        player.m_camera->rotate_vertical(glm::radians(m_input.mouse_dy()));
     }
 
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-        player.m_camera->rotate_vertical(glm::radians(-1.0));
-    }
-    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-        player.m_camera->rotate_vertical(glm::radians(1.0));
-    }
+
+    player.m_camera->m_transform.scale(glm::vec3(1.0f + (3.0 * m_input.mouse_scroll_y() * dt)));
 }
 
-void application::Application::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+void application::Application::framebuffer_size_callback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
     Application* app = Application::instance();
     app->m_width = width;
     app->m_height = height;
+}
+
+void application::Application::cursor_position_callback(GLFWwindow *window, double x, double y) {
+    Application* app = Application::instance();
+    app->m_input.update_mouse_pos(x, y);
+}
+
+void application::Application::scroll_callback(GLFWwindow *window, double x, double y) {
+    Application* app = Application::instance();
+    app->m_input.update_mouse_scroll(x, y);
 }
