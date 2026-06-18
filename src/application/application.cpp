@@ -1,5 +1,6 @@
 #include "application.hpp"
 #include <GLFW/glfw3.h>
+#include <algorithm>
 #include <cstdio>
 #include <format>
 #include <string>
@@ -12,8 +13,8 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
-
-#define WORK_GROUP_SIZE 16
+#include "../objects/shapes/sphere.hpp"
+#include "../objects/shapes/box.hpp"
 
 std::optional<application::Application*> application::Application::m_instance{};
 application::Application::Application() {
@@ -36,8 +37,24 @@ void list(objects::GameObject* object) {
 
     std::string name = std::string{object->name()} + std::format("#{}", object->id());
     bool is_open = ImGui::TreeNodeEx(name.c_str(), base_flags);
-    if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) {
+    if ((ImGui::IsItemClicked(ImGuiMouseButton_Left) || ImGui::IsItemClicked(ImGuiMouseButton_Right)) && !ImGui::IsItemToggledOpen()) {
         selected = object;
+    }
+
+    if (ImGui::BeginPopupContextItem(0)) {
+        if (ImGui::MenuItem("Add sphere")) {
+            auto sphere = new objects::shapes::Sphere{{}, 1.0f};
+            selected->add_child(sphere);
+        }
+        if (ImGui::MenuItem("Add box")) {
+            auto box = new objects::shapes::Box{{}, {1.0, 1.0, 1.0}};
+            selected->add_child(box);
+        }
+        if (ImGui::MenuItem("Delete")) {
+            selected->parent()->remove_child(selected);
+            selected = nullptr;
+        }
+        ImGui::EndPopup();
     }
 
     if (is_open) {
@@ -59,11 +76,11 @@ void menu() {
             selected->m_transform.translation(translation);
         }
         glm::vec3 angles = glm::eulerAngles(selected->m_transform.rotation());
-        float r[3] = {angles.x, angles.y, angles.z};
-        if (ImGui::DragFloat3("rotation", r, 0.005f)) {
-            selected->m_transform.rotate(angles.x - r[0], {1.0f, 0.0f, 0.0f});
-            selected->m_transform.rotate(angles.y - r[1], {0.0f, 1.0f, 0.0f});
-            selected->m_transform.rotate(angles.z - r[2], {0.0f, 0.0f, 1.0f});
+        float r[3] = {glm::degrees(angles.x), glm::degrees(angles.y), glm::degrees(angles.z)};
+        if (ImGui::DragFloat3("rotation", r, 0.5f)) {
+            selected->m_transform.rotate(angles.x - glm::radians(r[0]), {1.0f, 0.0f, 0.0f});
+            selected->m_transform.rotate(angles.y - glm::radians(r[1]), {0.0f, 1.0f, 0.0f});
+            selected->m_transform.rotate(angles.z - glm::radians(r[2]), {0.0f, 0.0f, 1.0f});
         }
     }
 }
@@ -141,7 +158,7 @@ void application::Application::process_input(objects::Player *player, ImGuiIO& i
             player->m_camera->rotate_vertical(glm::radians(m_input.mouse_dy()));
         }
 
-        player->m_camera->m_transform.scale(glm::vec3(1.0f + (3.0 * m_input.mouse_scroll_y() * dt)));
+        player->m_camera->m_transform.scale(glm::vec3(1.0f + (3.0 * -m_input.mouse_scroll_y() * dt)));
     }
 
 }

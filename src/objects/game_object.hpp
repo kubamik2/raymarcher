@@ -22,6 +22,7 @@ public:
     }
 
     void add_child(GameObject* child);
+    void remove_child(GameObject* child);
     const std::vector<GameObject*>& children() const noexcept {
         return m_children;
     }
