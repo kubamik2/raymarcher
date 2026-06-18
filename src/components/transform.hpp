@@ -9,17 +9,15 @@ namespace components {
 class Transform {
 public:
     // transform
-
-    Transform() :
-        m_translation(0.0f),
-        m_scale(1.0f),
-        m_rotation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f)) {}
-
-    Transform(glm::vec3 translation, glm::vec3 scale, glm::quat rotation) :
+    Transform(
+        glm::vec3 translation = glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f),
+        glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f)
+    ) :
         m_translation(translation),
         m_scale(scale),
         m_rotation(rotation) {}
-    
+
     glm::mat4 matrix();
 
     Transform operator*(Transform &other);
