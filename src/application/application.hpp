@@ -5,7 +5,7 @@
 #include "../objects/objects.hpp"
 #include "input.hpp"
 #include "imgui.h"
-#include "../world/world.hpp"
+#include "../world.hpp"
 #include "../shader/raymarcher.hpp"
 #include "window.hpp"
 

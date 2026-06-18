@@ -1,7 +1,7 @@
 #pragma once
 #include "../screen.hpp"
 #include "shader.hpp"
-#include "../world/world.hpp"
+#include "../world.hpp"
 #include <vector>
 
 namespace shader {
