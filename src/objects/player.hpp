@@ -7,6 +7,9 @@ class Player : public GameObject {
 public:
     Player();
     objects::camera::Camera *m_camera;
+    const char* name() override {
+        return "Player";
+    };
 private:
 
 };

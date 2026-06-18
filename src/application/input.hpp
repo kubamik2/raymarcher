@@ -1,15 +1,17 @@
 #pragma once
 #include <GLFW/glfw3.h>
+#include "imgui.h"
+#include "window.hpp"
 
 namespace application {
 class Input {
 public:
-    int get_key(GLFWwindow *window, int key) const {
-        return glfwGetKey(window, key);
+    int get_key(Window &window, int key) const {
+        return glfwGetKey(window.glfw_window(), key);
     }
 
-    int get_mouse_button(GLFWwindow *window, int button) const {
-        return glfwGetMouseButton(window, button);
+    int get_mouse_button(Window &window, int button) const {
+        return glfwGetMouseButton(window.glfw_window(), button);
     }
 
     double mouse_dx() const noexcept {
@@ -34,6 +36,10 @@ public:
 
     double mouse_scroll_y() const noexcept {
         return m_mouse_scroll_y;
+    }
+
+    bool gui_wants_mouse() const {
+        return ImGui::GetIO().WantCaptureMouse;
     }
 
     void update_mouse_pos(double x, double y);

@@ -4,6 +4,10 @@
 #include <optional>
 #include "../objects/objects.hpp"
 #include "input.hpp"
+#include "imgui.h"
+#include "../world/world.hpp"
+#include "../shader/raymarcher.hpp"
+#include "window.hpp"
 
 namespace application {
 class Application {
@@ -28,10 +32,11 @@ public:
     static void cursor_position_callback(GLFWwindow* window, double x, double y);
     static void scroll_callback(GLFWwindow* window, double x, double y);
 
-    void process_input(objects::Player &player, float dt);
+    void process_input(objects::Player *player, ImGuiIO& io, float dt);
 private:
     static std::optional<Application*> m_instance;
-    GLFWwindow *m_window;
-    int m_width, m_height;
+    Window m_window;
+    World m_world;
+    shader::Raymarcher m_raymarcher;
 };
 }

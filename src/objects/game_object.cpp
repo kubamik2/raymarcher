@@ -18,3 +18,5 @@ components::Transform objects::GameObject::global_transform() {
         return m_transform;
     }
 }
+
+size_t objects::GameObject::IDS = 0;

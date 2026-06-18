@@ -1,12 +1,17 @@
 #pragma once
 #include "../components/components.hpp"
+#include <cstdio>
 #include <vector>
 #include <optional>
 
 namespace objects {
 class GameObject {
 public:
+    GameObject() : m_id(IDS++) {}
     virtual ~GameObject();
+    virtual const char* name() {
+        return "GameObject";
+    }
 
     GameObject* parent() {
         return m_parent.value();
@@ -17,12 +22,22 @@ public:
     }
 
     void add_child(GameObject* child);
+    const std::vector<GameObject*>& children() const noexcept {
+        return m_children;
+    }
+
+    size_t id() const noexcept {
+        return m_id;
+    }
+
     components::Transform global_transform();
 
     components::Transform m_transform;
 
 private:
+    static size_t IDS;
     std::optional<GameObject*> m_parent;
     std::vector<GameObject*> m_children;
+    size_t m_id;
 };
 }
