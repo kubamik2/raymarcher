@@ -8,18 +8,19 @@ uniform vec3 camera_direction;
 
 struct Shape {
     int type;
+    mat4 transform;
     vec4 a;
     vec4 b;
 };
 
 struct Sphere {
-    vec3 position;
+    mat4 transform;
     float radius;
 };
 
 struct Box {
-    vec3 position;
-    vec3 b;
+    mat4 transform;
+    vec3 size;
 };
 
 layout(std430, binding = 3) buffer shape_data {
@@ -42,12 +43,12 @@ const int SHAPE_SPHERE = 0;
 const int SHAPE_BOX = 1;
 
 // sphere signed distance function
-float sdf_sphere(vec3 sphere_pos, float radius, vec3 pos) {
-    return length(sphere_pos - pos) - radius;
+float sdf_sphere(vec3 pos, float radius) {
+    return length(pos) - radius;
 }
 
-float sdf_box(vec3 box_pos, vec3 b, vec3 pos) {
-    vec3 q = abs(box_pos - pos) - b;
+float sdf_box(vec3 pos, vec3 size) {
+    vec3 q = abs(pos) - size;
     return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0);
 }
 
@@ -64,15 +65,15 @@ float smooth_min(float a, float b, float k) {
 
 Sphere sphere(Shape shape) {
     Sphere sphere;
-    sphere.position = shape.a.xyz;
-    sphere.radius = shape.a.w;
+    sphere.transform = shape.transform;
+    sphere.radius = shape.a.x;
     return sphere;
 }
 
 Box box(Shape shape) {
     Box box;
-    box.position = shape.a.xyz;
-    box.b = vec3(shape.a.w, shape.b.xy);
+    box.transform = shape.transform;
+    box.size = shape.a.xyz;
     return box;
 }
 
@@ -82,10 +83,10 @@ float get_shape_dist(int index, vec3 position) {
     switch (shape.type) {
     case SHAPE_SPHERE:
         Sphere sphere = sphere(shape);
-        return sdf_sphere(sphere.position, sphere.radius, position);
+        return sdf_sphere(vec3(inverse(sphere.transform)*vec4(position, 1)), sphere.radius);
     case SHAPE_BOX:
         Box box = box(shape);
-        return sdf_box(box.position, box.b, position);
+        return sdf_box(vec3(inverse(box.transform)*vec4(position, 1)), box.size);
     }
 }
 

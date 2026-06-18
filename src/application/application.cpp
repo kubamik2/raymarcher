@@ -1,5 +1,6 @@
 #include "application.hpp"
 #include <GLFW/glfw3.h>
+#include <cstdio>
 #include <format>
 #include <string>
 #include "../shader/shader.hpp"
@@ -57,63 +58,28 @@ void menu() {
             translation.z = pos[2];
             selected->m_transform.translation(translation);
         }
+        glm::vec3 angles = glm::eulerAngles(selected->m_transform.rotation());
+        float r[3] = {angles.x, angles.y, angles.z};
+        if (ImGui::DragFloat3("rotation", r, 0.005f)) {
+            selected->m_transform.rotate(angles.x - r[0], {1.0f, 0.0f, 0.0f});
+            selected->m_transform.rotate(angles.y - r[1], {0.0f, 1.0f, 0.0f});
+            selected->m_transform.rotate(angles.z - r[2], {0.0f, 0.0f, 1.0f});
+        }
     }
 }
 
-
-// struct shape {
-//     int type;
-//     float _[3];
-//     float x[4];
-//     float y[4];
-// };
-
 void application::Application::run() {
-    // Screen screen{ "src/shaders/vertex.glsl", "src/shaders/fragment.glsl" };
-    // Shader compute_shader = ShaderBuilder{}
-    //     .add_module("src/shaders/compute.glsl", GL_COMPUTE_SHADER)
-    //     .build();
-    //
-    // objects::Player player;
-
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     ImGui::StyleColorsDark();
     ImGui_ImplGlfw_InitForOpenGL(m_window.glfw_window(), true);
     ImGui_ImplOpenGL3_Init("#version 460");
-    // struct shape s;
-    // s.type = 0;
-    // s.x[0] = 0.0f;
-    // s.x[1] = 0.0f;
-    // s.x[2] = 0.0f;
-    // s.x[3] = 1.0f;
-    //
-    // struct data_t {
-    //     shape shapes[3];
-    // } data;
-    // data.shapes[0] = s;
-    // s.x[0] = 1.9;
-    // data.shapes[1] = s;
-    //
-    // s.type = 1;
-    // s.x[0] = 2.0f;
-    // s.x[1] = 2.0f;
-    // s.x[2] = 0.0f;
-    // s.x[3] = 0.5f;
-    // s.y[0] = 0.5f;
-    // s.y[1] = 0.5f;
-    // data.shapes[2] = s;
-    // GLuint ssbo;
-    // glGenBuffers(1, &ssbo);
-    // glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
-    // glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(data), &data, GL_DYNAMIC_COPY);
 
     float dt;
     float last_frame = (float)glfwGetTime();
     // render loop
     while (!glfwWindowShouldClose(m_window.glfw_window())) {
-        // input
         process_input(m_world.player(), io, dt);
 
         m_raymarcher.render(m_world, m_window.m_width, m_window.m_height);
@@ -133,8 +99,6 @@ void application::Application::run() {
         ImGui::End();
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-
 
         m_input.reset_mouse_delta();
         m_input.reset_mouse_scroll();
@@ -176,7 +140,6 @@ void application::Application::process_input(objects::Player *player, ImGuiIO& i
             player->m_camera->rotate_horizontal(glm::radians(m_input.mouse_dx()));
             player->m_camera->rotate_vertical(glm::radians(m_input.mouse_dy()));
         }
-
 
         player->m_camera->m_transform.scale(glm::vec3(1.0f + (3.0 * m_input.mouse_scroll_y() * dt)));
     }

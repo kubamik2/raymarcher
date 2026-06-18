@@ -5,7 +5,7 @@
 namespace objects::shapes {
 class ShapeData {
 public:
-    static const size_t DATA_SIZE = 8;
+    static const size_t DATA_SIZE = 24;
     ShapeData(int type, std::array<float, DATA_SIZE> data);
 private:
     int m_type;
