@@ -1,7 +1,7 @@
 #include "center_camera.hpp"
 
-objects::camera::CenterCamera::CenterCamera() {
-    objects::GameObject* camera = new objects::GameObject{};
+objects::camera::CenterCamera::CenterCamera(components::Transform transform) : objects::camera::Camera(transform) {
+    objects::GameObject* camera = new objects::GameObject{{}};
     camera->m_transform.translation({ 0.0f, 0.0f, 4.0f });
     m_camera = camera;
     add_child(camera);

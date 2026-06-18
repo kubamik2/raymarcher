@@ -4,7 +4,7 @@
 namespace objects::camera {
 class CenterCamera : public Camera {
 public:
-    CenterCamera();
+    CenterCamera(components::Transform);
     void bind(GLuint program) override;
     void rotate_horizontal(float angle) override;
     void rotate_vertical(float angle) override;

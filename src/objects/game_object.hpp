@@ -7,7 +7,7 @@
 namespace objects {
 class GameObject {
 public:
-    GameObject() : m_id(IDS++) {}
+    GameObject(components::Transform transform = {}) : m_id(IDS++), m_transform(transform) {}
     virtual ~GameObject();
     virtual const char* name() {
         return "GameObject";

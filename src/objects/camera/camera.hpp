@@ -11,7 +11,8 @@ public:
     virtual void rotate_horizontal(float angle) = 0;
     virtual void rotate_vertical(float angle) = 0;
     virtual glm::vec3 direction() = 0;
-    virtual ~Camera() {}
+    Camera(components::Transform transform) : objects::GameObject(transform) {}
+    virtual ~Camera() {};
     virtual const char* name() override {
         return "Camera";
     };

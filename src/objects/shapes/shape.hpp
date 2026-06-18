@@ -15,6 +15,7 @@ private:
 
 class Shape : public objects::GameObject {
 public:
+    Shape(components::Transform transform) : objects::GameObject(transform) {}
     virtual ShapeData data() = 0;
     virtual const char* name() override {
         return "Shape";
