@@ -3,9 +3,16 @@
 #include "../../objects/shapes/shape.hpp"
 #include "../../objects/shapes/sphere.hpp"
 #include "../../objects/shapes/box.hpp"
+#include <cstdio>
+#include <exception>
+#include <string>
 using namespace objects::shapes;
 
 void gui::ShapeMenu::render(objects::shapes::Shape *shape) {
+    if (!m_current_shape_id.has_value() || shape->id() != m_current_shape_id.value()) {
+        m_current_shape_id = shape->id();
+        sprintf(m_order_buf, "%d", shape->m_order);
+    }
     ImGui::Begin("Shape Menu" );
 
     // translation
@@ -36,6 +43,30 @@ void gui::ShapeMenu::render(objects::shapes::Shape *shape) {
         shape->m_transform.scaling(scale);
     }
 
+    if (ImGui::BeginCombo("op", m_items[shape->m_op])) {
+        for (int i = 0; i < IM_COUNTOF(m_items); i++) {
+            bool is_selected = m_selected == i;
+            if (ImGui::Selectable(m_items[i], is_selected)) {
+                m_selected = i;
+                shape->m_op = m_items_ops[m_selected];
+            }
+
+            if (is_selected) {
+                ImGui::SetItemDefaultFocus();
+            }
+        }
+        ImGui::EndCombo();
+    }
+
+    if(ImGui::InputText("order", m_order_buf, IM_COUNTOF(m_order_buf))) {
+        try {
+            int order = std::stoi(m_order_buf);
+            shape->m_order = order;
+        } catch (std::exception& e) {
+            sprintf(m_order_buf, "%d", shape->m_order);
+        }
+    }
+
     if (shape->type() == ShapeType::BOX) {
         Box* box = dynamic_cast<Box*>(shape);
         float size[3] = {box->m_size.x, box->m_size.y, box->m_size.z};
@@ -48,24 +79,6 @@ void gui::ShapeMenu::render(objects::shapes::Shape *shape) {
         Sphere* sphere = dynamic_cast<Sphere*>(shape);
         ImGui::DragFloat("radius", &sphere->m_radius, 0.05f);
     }
-
-    // switch (shape->type()) {
-    // case ShapeType::SPHERE:
-    //     {
-    //         Sphere* sphere = dynamic_cast<Sphere*>(shape);
-    //         ImGui::DragFloat("radius", &sphere->m_radius, 0.05f);
-    //     }
-    //     break;
-    // case ShapeType::BOX:
-    //     Box* box = dynamic_cast<Box*>(shape);
-    //     float size[3] = {box->m_size.x, box->m_size.y, box->m_size.z};
-    //     if (ImGui::DragFloat("radius", size, 0.05f)) {
-    //         box->m_size.x = size[0];
-    //         box->m_size.y = size[1];
-    //         box->m_size.z = size[2];
-    //     }
-    //     break;
-    // }
 
     ImGui::End();
 }

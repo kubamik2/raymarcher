@@ -33,3 +33,16 @@ components::Transform objects::GameObject::global_transform() {
 }
 
 size_t objects::GameObject::IDS = 0;
+
+std::optional<objects::GameObject*> objects::GameObject::find_by_id(size_t id) {
+    if (this->id() == id) {
+        return this;
+    }
+    for (auto const child : children()) {
+        auto val = child->find_by_id(id);
+        if (val.has_value()) {
+            return val;
+        }
+    }
+    return {};
+}

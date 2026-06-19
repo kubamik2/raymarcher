@@ -2,13 +2,6 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-#include "imgui_internal.h"
-#include <iostream>
-
-gui::Gui::Gui() {
-    ImGui::CreateContext();
-    // ImGui::GetStyle().ScaleAllSizes(4.0);
-}
 
 void gui::Gui::render(World &world) {
     ImGui_ImplOpenGL3_NewFrame();

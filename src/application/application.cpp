@@ -97,6 +97,7 @@ void application::Application::run() {
     float last_frame = (float)glfwGetTime();
     // render loop
     while (!glfwWindowShouldClose(m_window.glfw_window())) {
+        // printf("%.1f\n", 1.0f / dt);
         process_input(m_world.player(), io, dt);
 
         m_raymarcher.render(m_world, m_window.m_width, m_window.m_height);

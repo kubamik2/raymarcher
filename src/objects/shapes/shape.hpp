@@ -8,13 +8,23 @@ enum ShapeType {
     BOX = 1,
 };
 
+enum OpType {
+    UNION = 0,
+    SUBTRACTION = 1,
+    INTERSECTION = 2,
+    SMOOTH_UNION = 3,
+    SMOOTH_SUBTRACTION = 4,
+    SMOOTH_INTERSECTION = 5,
+};
+
 class ShapeData {
 public:
     static const size_t DATA_SIZE = 24;
-    ShapeData(ShapeType type, std::array<float, DATA_SIZE> data);
+    ShapeData(ShapeType type, OpType op_type, std::array<float, DATA_SIZE> data);
 private:
     int m_type;
-    float _pad[3];
+    int m_op_type;
+    float _pad[2];
     float m_data[DATA_SIZE];
 };
 
@@ -26,5 +36,8 @@ public:
     virtual const char* name() override {
         return "Shape";
     }
+
+    OpType m_op = OpType::UNION;
+    int m_order = 0;
 };
 }

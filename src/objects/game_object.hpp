@@ -31,6 +31,8 @@ public:
         return m_id;
     }
 
+    std::optional<GameObject*> find_by_id(size_t id);
+
     components::Transform global_transform();
 
     components::Transform m_transform;

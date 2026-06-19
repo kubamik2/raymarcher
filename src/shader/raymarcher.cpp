@@ -10,7 +10,6 @@ shader::Raymarcher::Raymarcher() :
     glGenBuffers(1, &m_shapes_ssbo);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_shapes_ssbo);
     glBufferData(GL_SHADER_STORAGE_BUFFER, 0, nullptr, GL_DYNAMIC_COPY);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
 void shader::Raymarcher::render(World& world, int window_width, int window_height) {
@@ -23,7 +22,7 @@ void shader::Raymarcher::render(World& world, int window_width, int window_heigh
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, m_screen.get_screen_texture());
         glUniform1i(glGetUniformLocation(m_compute_shader.get_id(), "screen"), 0);
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, m_shapes_ssbo);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, m_shapes_ssbo);
         glDispatchCompute((window_width + WORK_GROUP_SIZE - 1) / WORK_GROUP_SIZE, (window_height + WORK_GROUP_SIZE) / WORK_GROUP_SIZE, 1);
     }
 
@@ -41,5 +40,4 @@ void shader::Raymarcher::update_shapes_ssbo(std::vector<objects::shapes::ShapeDa
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_shapes_ssbo);
     glBufferData(GL_SHADER_STORAGE_BUFFER, size, shape_data.data(), GL_DYNAMIC_COPY);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
 }

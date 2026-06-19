@@ -7,6 +7,7 @@ namespace objects::shapes {
 class ShapeHolder : public GameObject {
 public:
     std::vector<objects::shapes::ShapeData> recreate_shape_data();
+    std::vector<Shape*> all_shapes();
 
     const char* name() override {
         return "Root";

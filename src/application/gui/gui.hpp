@@ -6,7 +6,6 @@
 namespace gui {
 class Gui {
 public:
-    Gui();
     void render(World &world);
 private:
     ShapeTree m_shape_tree;

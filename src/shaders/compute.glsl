@@ -8,22 +8,25 @@ uniform vec3 camera_direction;
 
 struct Shape {
     int type;
+    int op;
     mat4 transform;
     vec4 a;
     vec4 b;
 };
 
 struct Sphere {
+    int op;
     mat4 transform;
     float radius;
 };
 
 struct Box {
+    int op;
     mat4 transform;
     vec3 size;
 };
 
-layout(std430, binding = 3) buffer shape_data {
+layout(std430, binding = 1) buffer shape_data {
     Shape shapes[];
 };
 
@@ -58,6 +61,12 @@ float sdf_round_box(vec3 position, vec3 b, float r) {
     return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0) - r;
 }
 
+
+float smooth_union(float a, float b, float k) {
+    k *= 4.0;
+    float h = max(k - abs(a-b), 0.0);
+    return min(a, b) - h*h*0.25/k;
+}
 float smooth_min(float a, float b, float k) {
     float h = max(k - abs(a - b), 0) / k;
     return min(a, b) - h * h * h * k * 1 / 6.0;
@@ -65,6 +74,7 @@ float smooth_min(float a, float b, float k) {
 
 Sphere sphere(Shape shape) {
     Sphere sphere;
+    sphere.op = shape.op;
     sphere.transform = shape.transform;
     sphere.radius = shape.a.x;
     return sphere;
@@ -72,6 +82,7 @@ Sphere sphere(Shape shape) {
 
 Box box(Shape shape) {
     Box box;
+    box.op = shape.op;
     box.transform = shape.transform;
     box.size = shape.a.xyz;
     return box;
@@ -98,7 +109,28 @@ float get_dist(vec3 position) {
 
     float dist = get_shape_dist(0, position);
     for (int i = 1; i < shapes.length(); i++) {
-        dist = min(get_shape_dist(i, position), dist);
+        Shape shape = shapes[i];
+        float d = get_shape_dist(i, position);
+        switch (shapes[i-1].op) {
+        case 0:
+            dist = min(d, dist);
+            break;
+        case 1:
+            dist = max(-d, dist);
+            break;
+        case 2:
+            dist = max(d, dist);
+            break;
+        case 3:
+            dist = smooth_union(d, dist, 0.1);
+            break;
+        case 4:
+            dist = -smooth_union(d, -dist, 0.1);
+            break;
+        case 5:
+            dist = -smooth_union(-d, -dist, 0.1);
+            break;
+        }
     }
 
     return dist;
