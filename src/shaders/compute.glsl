@@ -33,10 +33,10 @@ const float FOV = radians(60.0);
 const vec3 SPHERE_POS = vec3(0.0, 0.0, 2.0);
 const float SPHERE_RADIUS = 1.0;
 
-const vec3 LIGHT = vec3(0.0, 10.0, 0.0);
+const vec3 LIGHT = vec3(5.0, 10.0, 0.0);
 
 const float MIN_LIMIT = 0.001;
-const float MAX_LIMIT = 1000.0;
+const float MAX_LIMIT = 2000.0;
 const int ITERS = 80;
 
 const int SHAPE_SPHERE = 0;
