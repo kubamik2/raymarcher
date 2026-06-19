@@ -11,7 +11,7 @@ Simple 3D mathematical shapes editor using raymarching.
 - hold left mouse button + mouse movement - move the camera around center
 - scroll - zoom in/out
 ### Tree Shape window
-Allows viewieng object hierarchy tree. Right click opens up a menu with options to add certain shapes or delete an object. Clicking on an object opens up the Shape Menu.
+Allows viewieng the object hierarchy tree. Right click opens up a menu with options to add certain shapes or delete an object. Clicking on an object opens up the Shape Menu.
 ### Shape Menu window
 Allows modifying properties of the selected object, such as it's:
     - translation
