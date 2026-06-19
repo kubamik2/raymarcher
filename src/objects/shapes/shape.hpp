@@ -6,6 +6,7 @@ namespace objects::shapes {
 enum ShapeType {
     SPHERE = 0,
     BOX = 1,
+    FRACTAL = 2
 };
 
 enum OpType {

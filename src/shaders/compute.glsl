@@ -26,6 +26,11 @@ struct Box {
     vec3 size;
 };
 
+struct Fractal {
+    int op;
+    mat4 transform;
+};
+
 layout(std430, binding = 1) buffer shape_data {
     Shape shapes[];
 };
@@ -44,6 +49,7 @@ const int ITERS = 80;
 
 const int SHAPE_SPHERE = 0;
 const int SHAPE_BOX = 1;
+const int SHAPE_FRACTAL = 2;
 
 // sphere signed distance function
 float sdf_sphere(vec3 pos, float radius) {
@@ -59,6 +65,35 @@ float sdf_box(vec3 pos, vec3 size) {
 float sdf_round_box(vec3 position, vec3 b, float r) {
     vec3 q = abs(position) - b + r;
     return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0) - r;
+}
+
+float sdf_fractal(vec3 pos) {
+    vec3 a1 = vec3( 1, 1, 1);
+    vec3 a2 = vec3(-1,-1, 1);
+    vec3 a3 = vec3( 1,-1,-1);
+    vec3 a4 = vec3(-1, 1,-1);
+    
+    vec3 c;
+    int n = 0;
+    float dist;
+    float d;
+    const int Iterations = 10;
+    const float Scale = 2.0;
+
+    for(int j = 0; j < Iterations; j++)
+    {
+         c = a1; 
+         dist = length(pos-a1);
+
+         d = length(pos-a2); if (d < dist) { c = a2; dist=d; }
+         d = length(pos-a3); if (d < dist) { c = a3; dist=d; }
+         d = length(pos-a4); if (d < dist) { c = a4; dist=d; }
+         pos = Scale*pos-c*(Scale-1.0);
+
+         n++;
+    }
+
+    return length(pos) * pow(Scale, float(-n)) - 0.01;
 }
 
 
@@ -88,6 +123,13 @@ Box box(Shape shape) {
     return box;
 }
 
+Fractal fractal(Shape shape) {
+    Fractal fractal;
+    fractal.op = shape.op;
+    fractal.transform = shape.transform;
+    return fractal;
+}
+
 // get distance to shape at position
 float get_shape_dist(int index, vec3 position) {
     Shape shape = shapes[index];
@@ -98,6 +140,9 @@ float get_shape_dist(int index, vec3 position) {
     case SHAPE_BOX:
         Box box = box(shape);
         return sdf_box(vec3(inverse(box.transform)*vec4(position, 1)), box.size);
+    case SHAPE_FRACTAL:
+        Fractal fractal = fractal(shape);
+        return sdf_fractal(vec3(inverse(fractal.transform)*vec4(position, 1)));
     }
 }
 

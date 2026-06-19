@@ -6,6 +6,7 @@
 #include <string>
 #include "../../objects/shapes/box.hpp"
 #include "../../objects/shapes/sphere.hpp"
+#include "../../objects/shapes/fractal.hpp"
 
 using gui::ShapeTree, std::optional;
 using namespace objects::shapes;
@@ -34,6 +35,10 @@ void ShapeTree::draw(objects::GameObject* object) {
         if (ImGui::MenuItem("Add box")) {
             auto box = new objects::shapes::Box{{}, {1.0, 1.0, 1.0}};
             selected->add_child(box);
+        }
+        if (ImGui::MenuItem("Add fractal")) {
+            auto fractal = new objects::shapes::Fractal{{}};
+            selected->add_child(fractal);
         }
         if (ImGui::MenuItem("Delete")) {
             m_delete_selected = true;
@@ -82,6 +87,10 @@ void ShapeTree::render(World &world) {
         if (ImGui::MenuItem("Add box")) {
             auto box = new objects::shapes::Box{{}, {1.0, 1.0, 1.0}};
             world.shapes()->add_child(box);
+        }
+        if (ImGui::MenuItem("Add fractal")) {
+            auto fractal = new objects::shapes::Fractal{{}};
+            world.shapes()->add_child(fractal);
         }
         m_popup_handled = true;
         ImGui::EndPopup();
