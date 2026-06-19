@@ -9,6 +9,9 @@ public:
     const char* name() override {
         return "Sphere";
     }
+    ShapeType type() const noexcept override {
+        return ShapeType::SPHERE;
+    }
 private:
 };
 }

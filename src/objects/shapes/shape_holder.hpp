@@ -9,7 +9,7 @@ public:
     std::vector<objects::shapes::ShapeData> recreate_shape_data();
 
     const char* name() override {
-        return "ShapeHolder";
+        return "Root";
     }
 
     bool was_modified() const noexcept {

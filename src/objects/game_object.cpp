@@ -1,5 +1,6 @@
 #include "game_object.hpp"
 #include <algorithm>
+#include <cstdio>
 
 objects::GameObject::~GameObject() {
     for (auto object : m_children) {

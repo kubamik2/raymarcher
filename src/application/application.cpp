@@ -101,21 +101,7 @@ void application::Application::run() {
 
         m_raymarcher.render(m_world, m_window.m_width, m_window.m_height);
 
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-
-        ImGuiWindowFlags flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar;
-        ImGuiViewport* viewport = ImGui::GetMainViewport();
-        ImGui::BeginViewportSideBar("My name is window, ImGUI window", viewport, ImGuiDir_Right, 200.0f, flags);
-        ImGui::Text("%.1f", 1.0f / dt);
-        list(m_world.shapes());
-        menu();
-
-
-        ImGui::End();
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        m_gui.render(m_world);
 
         m_input.reset_mouse_delta();
         m_input.reset_mouse_scroll();

@@ -1,6 +1,6 @@
 #include "world.hpp"
-#include "../objects/shapes/sphere.hpp"
-#include "../objects/shapes/box.hpp"
+#include "objects/shapes/sphere.hpp"
+#include "objects/shapes/box.hpp"
 
 World::World() {
     m_shapes = new objects::shapes::ShapeHolder{};

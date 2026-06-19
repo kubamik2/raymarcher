@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <optional>
 #include "../objects/objects.hpp"
+#include "gui/gui.hpp"
 #include "input.hpp"
 #include "imgui.h"
 #include "../world.hpp"
@@ -38,5 +39,6 @@ private:
     Window m_window;
     World m_world;
     shader::Raymarcher m_raymarcher;
+    gui::Gui m_gui;
 };
 }
