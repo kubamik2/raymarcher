@@ -8,6 +8,5 @@ Prosty edytor wykorzystujący technikę renderowania "raymarching". Pozwala na d
 ## Biblioteki
 - GLFW
 - Dear ImGui
-- stb_image
 - GLAD
 - OpenGL
